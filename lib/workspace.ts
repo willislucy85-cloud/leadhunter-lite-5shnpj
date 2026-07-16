@@ -10,16 +10,21 @@ export type Workspace = {
     stripe_subscription_id: string | null
 }
 
-// Every Server Action/route handler that touches workspace-scoped data should
-// go through this instead of trusting a client-supplied workspace id. RLS
-// (via my_workspace_ids()) still enforces the boundary server-side either way.
-export async function requireWorkspace() {
+export type WorkspaceContext = {
+    supabase: ReturnType<typeof createClient>
+    user: { id: string }
+    workspaceId: string
+    role: 'Owner' | 'Admin' | 'Member'
+    workspace: Workspace
+}
+
+export async function getWorkspaceContext(): Promise<WorkspaceContext | null> {
     const supabase = createClient()
     const {
         data: { user },
     } = await supabase.auth.getUser()
 
-    if (!user) redirect('/login')
+    if (!user) return null
 
     const { data: membership, error } = await supabase
         .from('workspace_members')
@@ -29,14 +34,26 @@ export async function requireWorkspace() {
         .maybeSingle()
 
     if (error || !membership || !membership.workspaces) {
-        redirect('/login')
+        return null
     }
 
     return {
         supabase,
-        user,
+        user: { id: user.id },
         workspaceId: membership.workspace_id as string,
         role: membership.role as 'Owner' | 'Admin' | 'Member',
         workspace: membership.workspaces as unknown as Workspace,
     }
+}
+
+// Every Server Action/route handler that touches workspace-scoped data should
+// go through this instead of trusting a client-supplied workspace id. RLS
+// (via my_workspace_ids()) still enforces the boundary server-side either way.
+export async function requireWorkspace() {
+    const context = await getWorkspaceContext()
+    if (!context) {
+        redirect('/login')
+    }
+
+    return context
 }

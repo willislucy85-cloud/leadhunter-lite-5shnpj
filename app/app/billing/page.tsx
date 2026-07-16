@@ -3,9 +3,18 @@ import { fetchLeads } from '@/lib/data'
 import { TopBar } from '@/components/leadhunter/TopBar'
 import { TIERS } from '@/lib/constants'
 import { Badge } from '@/components/leadhunter/primitives'
+import { TwilioTestCard } from '@/components/leadhunter/TwilioTestCard'
 
 export default async function BillingPage() {
     const { supabase, workspaceId, workspace } = await requireWorkspace()
+    const hasTwilioConfigured = Boolean(
+        process.env.TWILIO_ACCOUNT_SID &&
+        process.env.TWILIO_AUTH_TOKEN &&
+        process.env.TWILIO_PHONE_NUMBER &&
+        process.env.TWILIO_ACCOUNT_SID !== 'demo' &&
+        process.env.TWILIO_AUTH_TOKEN !== 'demo' &&
+        process.env.TWILIO_PHONE_NUMBER !== 'demo'
+    )
     const leads = await fetchLeads(supabase, workspaceId)
     const tier = TIERS[workspace.subscription_tier]
     const leadsLimit = tier.leadsLimit
@@ -87,6 +96,55 @@ export default async function BillingPage() {
                         </div>
                     </div>
                 </section>
+
+                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <h2 className="text-sm font-bold">Manage subscription</h2>
+                    <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>
+                        Upgrade or manage your billing directly with Stripe.
+                    </p>
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                        {workspace.subscription_tier === 'Free' && (
+                            <>
+                                <form action="/api/stripe/checkout" method="post">
+                                    <input type="hidden" name="plan" value="Pro" />
+                                    <button
+                                        type="submit"
+                                        className="lh-btn lh-focus inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-white"
+                                        style={{ background: 'var(--lh-accent)' }}
+                                    >
+                                        Upgrade to Pro
+                                    </button>
+                                </form>
+
+                                <form action="/api/stripe/checkout" method="post">
+                                    <input type="hidden" name="plan" value="Business" />
+                                    <button
+                                        type="submit"
+                                        className="lh-btn lh-focus inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm font-semibold"
+                                        style={{ borderColor: 'var(--lh-border)', color: 'var(--lh-ink)' }}
+                                    >
+                                        Upgrade to Business
+                                    </button>
+                                </form>
+                            </>
+                        )}
+
+                        {workspace.subscription_tier !== 'Free' && workspace.stripe_customer_id && (
+                            <form action="/api/stripe/portal" method="post">
+                                <button
+                                    type="submit"
+                                    className="lh-btn lh-focus inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm font-semibold"
+                                    style={{ borderColor: 'var(--lh-border)', color: 'var(--lh-ink)' }}
+                                >
+                                    Open Stripe Billing Portal
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </section>
+
+                {hasTwilioConfigured && <TwilioTestCard />}
             </main>
         </>
     )
