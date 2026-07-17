@@ -40,6 +40,11 @@ export function BrandStyles() {
 
       .lh-row:hover { background: #fff8ef; }
 
+      .lh-card {
+        background: var(--lh-card);
+        border: 1px solid var(--lh-border);
+      }
+
       .lh-surface {
         background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.87));
         backdrop-filter: blur(2px);

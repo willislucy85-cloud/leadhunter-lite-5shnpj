@@ -73,11 +73,11 @@ export function LeadDetailPanel({
     return (
         <div className="fixed inset-0 z-30 flex justify-end" style={{ background: 'rgba(14,15,19,0.45)' }} onMouseDown={onClose}>
             <div
-                className="lh-fade-in lh-scroll bg-white h-full overflow-y-auto"
-                style={{ width: 'min(460px, 94vw)' }}
+                className="lh-fade-in lh-scroll h-full overflow-y-auto"
+                style={{ width: 'min(460px, 94vw)', background: 'var(--lh-card)' }}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="sticky top-0 bg-white border-b px-5 py-4 flex items-center justify-between z-10" style={{ borderColor: 'var(--lh-border)' }}>
+                <div className="sticky top-0 border-b px-5 py-4 flex items-center justify-between z-10" style={{ borderColor: 'var(--lh-border)', background: 'var(--lh-card)' }}>
                     <div>
                         <p className="font-bold text-lg leading-tight">{lead.name}</p>
                         <p className="text-sm" style={{ color: 'var(--lh-muted)' }}>{lead.company}</p>

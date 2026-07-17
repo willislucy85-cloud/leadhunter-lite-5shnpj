@@ -31,7 +31,7 @@ export default async function BillingPage() {
             <TopBar title="Billing" subtitle="Plan, usage, and limits." tier={workspace.subscription_tier} leadsUsed={leads.length} />
             <main className="flex-1 p-5 sm:p-7 lh-scroll" style={{ overflowY: 'auto' }}>
                 <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Current plan</p>
                         <p className="mt-2 text-xl font-extrabold">{workspace.subscription_tier}</p>
                         <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>{planPrice}</p>
@@ -42,7 +42,7 @@ export default async function BillingPage() {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Lead usage</p>
                         <p className="mt-2 text-xl font-extrabold">
                             {leads.length}
@@ -58,7 +58,7 @@ export default async function BillingPage() {
                         )}
                     </div>
 
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>AI enrichments</p>
                         <p className="mt-2 text-xl font-extrabold">
                             {enrichUsed}
@@ -75,7 +75,7 @@ export default async function BillingPage() {
                     </div>
                 </div>
 
-                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <section className="lh-card mt-4 rounded-xl p-4">
                     <h2 className="text-sm font-bold">Plan entitlements</h2>
                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
                         <div className="rounded-lg border p-3" style={{ borderColor: 'var(--lh-border)' }}>
@@ -97,7 +97,7 @@ export default async function BillingPage() {
                     </div>
                 </section>
 
-                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <section className="lh-card mt-4 rounded-xl p-4">
                     <h2 className="text-sm font-bold">Manage subscription</h2>
                     <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>
                         Upgrade or manage your billing directly with Stripe.

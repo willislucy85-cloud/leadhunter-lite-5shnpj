@@ -5,7 +5,7 @@ export const STATUS_COLOR: Record<LeadStatus, string> = {
     New: '#6B6F76',
     Contacted: '#C8860A',
     Engaged: '#1F6FB2',
-    Qualified: '#FF5A1F',
+    Qualified: '#DE470F',
     Won: '#1F8A6F',
     Lost: '#C4453A',
 }

@@ -44,7 +44,7 @@ export function TwilioTestCard() {
     }
 
     return (
-        <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+        <section className="lh-card mt-4 rounded-xl p-4">
             <h2 className="text-sm font-bold">Twilio test SMS</h2>
             <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>
                 Send a one-off SMS to verify your Twilio credentials and sender number.

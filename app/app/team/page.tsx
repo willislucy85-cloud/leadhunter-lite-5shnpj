@@ -43,25 +43,25 @@ export default async function TeamPage() {
             <TopBar title="Team" subtitle="Who's working which leads." tier={workspace.subscription_tier} leadsUsed={leads.length} />
             <main className="flex-1 p-5 sm:p-7 lh-scroll" style={{ overflowY: 'auto' }}>
                 <div className="grid gap-4 sm:grid-cols-4">
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Members</p>
                         <p className="mt-2 text-2xl font-extrabold">{members.length}</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Owners</p>
                         <p className="mt-2 text-2xl font-extrabold">{roleCounts.Owner}</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Admins</p>
                         <p className="mt-2 text-2xl font-extrabold">{roleCounts.Admin}</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Members</p>
                         <p className="mt-2 text-2xl font-extrabold">{roleCounts.Member}</p>
                     </div>
                 </div>
 
-                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <section className="lh-card mt-4 rounded-xl p-4">
                     <h2 className="mb-3 text-sm font-bold">Workspace access</h2>
                     {members.length === 0 ? (
                         <EmptyState icon={Users2} title="No team members found" body="No workspace memberships were returned for this workspace." />

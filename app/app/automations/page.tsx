@@ -48,21 +48,21 @@ export default async function AutomationsPage() {
             <TopBar title="Automations" subtitle="Set the rules. Let them run." tier={workspace.subscription_tier} leadsUsed={leads.length} />
             <main className="flex-1 p-5 sm:p-7 lh-scroll" style={{ overflowY: 'auto' }}>
                 <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Overdue follow-ups</p>
                         <p className="mt-2 text-2xl font-extrabold">{followUpOverdue}</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>High-intent new leads</p>
                         <p className="mt-2 text-2xl font-extrabold">{highIntentUncontacted}</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Stalled opportunities</p>
                         <p className="mt-2 text-2xl font-extrabold">{stalledLeads}</p>
                     </div>
                 </div>
 
-                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <section className="lh-card mt-4 rounded-xl p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                         <h2 className="text-sm font-bold">Suggested automation rules</h2>
                         <Badge color="#FF5A1F" soft>

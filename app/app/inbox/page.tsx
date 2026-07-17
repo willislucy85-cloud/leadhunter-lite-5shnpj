@@ -23,7 +23,7 @@ export default async function InboxPage() {
         <>
             <TopBar title="Inbox" subtitle="Every email and text, in one place." tier={workspace.subscription_tier} leadsUsed={leads.length} />
             <main className="flex-1 p-5 sm:p-7 lh-scroll" style={{ overflowY: 'auto' }}>
-                <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <div className="lh-card rounded-xl p-4">
                     <div className="mb-4 flex items-center justify-between gap-3">
                         <div>
                             <h2 className="text-sm font-bold">Activity inbox</h2>
@@ -42,7 +42,7 @@ export default async function InboxPage() {
                                 <Link
                                     key={entry.id}
                                     href={`/app/leads?lead=${entry.lead_id}`}
-                                    className="lh-focus flex items-start justify-between gap-3 rounded-lg border p-3"
+                                    className="lh-focus lh-row flex items-start justify-between gap-3 rounded-lg border p-3"
                                     style={{ borderColor: 'var(--lh-border)' }}
                                 >
                                     <div>

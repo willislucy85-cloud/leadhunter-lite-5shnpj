@@ -23,24 +23,24 @@ export default async function SequencesPage() {
             <TopBar title="Sequences" subtitle="Multi-step outreach that runs itself." tier={workspace.subscription_tier} leadsUsed={leads.length} />
             <main className="flex-1 p-5 sm:p-7 lh-scroll" style={{ overflowY: 'auto' }}>
                 <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Enrollable now</p>
                         <p className="mt-2 text-2xl font-extrabold">{enrollable.length}</p>
                         <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>Score 55+ and still open.</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Hot leads</p>
                         <p className="mt-2 text-2xl font-extrabold">{hot}</p>
                         <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>Score 70+ ready for rapid follow-up.</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                    <div className="lh-card rounded-xl p-4">
                         <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--lh-muted)' }}>Sequence health</p>
                         <p className="mt-2 text-2xl font-extrabold">MVP</p>
                         <p className="mt-1 text-sm" style={{ color: 'var(--lh-muted)' }}>Use this list to prioritize outreach enrollment.</p>
                     </div>
                 </div>
 
-                <section className="mt-4 rounded-xl border bg-white p-4" style={{ borderColor: 'var(--lh-border)' }}>
+                <section className="lh-card mt-4 rounded-xl p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                         <h2 className="text-sm font-bold">Recommended enrollments</h2>
                         <Badge color="#FF5A1F" soft>
@@ -56,7 +56,7 @@ export default async function SequencesPage() {
                                 <Link
                                     key={lead.id}
                                     href={`/app/leads?lead=${lead.id}`}
-                                    className="lh-focus flex items-center justify-between rounded-lg border p-3"
+                                    className="lh-focus lh-row flex items-center justify-between rounded-lg border p-3"
                                     style={{ borderColor: 'var(--lh-border)' }}
                                 >
                                     <div>

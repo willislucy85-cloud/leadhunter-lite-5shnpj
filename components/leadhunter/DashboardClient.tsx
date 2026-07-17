@@ -12,7 +12,7 @@ import type { TimelineEntry } from '@/lib/types'
 
 function StatCard({ icon: Icon, label, value, accent }: { icon: any; label: string; value: number | string; accent?: string }) {
     return (
-        <div className="bg-white rounded-xl p-4 border" style={{ borderColor: 'var(--lh-border)' }}>
+        <div className="lh-card rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
                 <Icon size={15} style={{ color: accent || 'var(--lh-muted)' }} />
                 <span className="text-xs font-medium" style={{ color: 'var(--lh-muted)' }}>{label}</span>
@@ -39,10 +39,10 @@ export function DashboardClient({ leads, timeline }: { leads: Lead[]; timeline: 
     return (
         <div className="flex flex-col gap-5">
             {topLead && (
-                <div className="bg-white rounded-xl p-5 border flex flex-col sm:flex-row items-center gap-5" style={{ borderColor: 'var(--lh-border)' }}>
+                <div className="lh-card rounded-xl p-5 flex flex-col sm:flex-row items-center gap-5">
                     <ScoreGauge {...getScores(topLead)} size={104} />
                     <div className="flex-1 text-center sm:text-left">
-                        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--lh-accent)' }}>Today&apos;s focus</p>
+                        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--lh-accent-deep)' }}>Today&apos;s focus</p>
                         <p className="font-bold text-lg mt-0.5">{topLead.name} <span className="font-normal" style={{ color: 'var(--lh-muted)' }}>— {topLead.company}</span></p>
                         <p className="text-sm mt-1" style={{ color: 'var(--lh-muted)' }}>
                             {topLead.category} · {topLead.city}, {topLead.state} · <Badge color={STATUS_COLOR[topLead.status]}>{topLead.status}</Badge>
@@ -62,7 +62,7 @@ export function DashboardClient({ leads, timeline }: { leads: Lead[]; timeline: 
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5">
-                <div className="bg-white rounded-xl p-4 border" style={{ borderColor: 'var(--lh-border)' }}>
+                <div className="lh-card rounded-xl p-4">
                     <h3 className="font-bold text-sm mb-3">Pipeline by status</h3>
                     <div style={{ height: 220 }}>
                         <ResponsiveContainer width="100%" height="100%">
@@ -77,7 +77,7 @@ export function DashboardClient({ leads, timeline }: { leads: Lead[]; timeline: 
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 border" style={{ borderColor: 'var(--lh-border)' }}>
+                <div className="lh-card rounded-xl p-4">
                     <h3 className="font-bold text-sm mb-3">Recent activity</h3>
                     {timeline.length === 0 ? (
                         <EmptyState icon={Clock} title="Nothing yet" body="Activity across your leads will show up here." />

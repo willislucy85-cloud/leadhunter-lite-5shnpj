@@ -202,7 +202,7 @@ export function LeadsClient({ leads, tier, initialSelectedLeadId }: { leads: Lea
                 </div>
             )}
 
-            <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: 'var(--lh-border)' }}>
+            <div className="lh-card rounded-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>

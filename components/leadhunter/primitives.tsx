@@ -96,7 +96,7 @@ export function Modal({ title, onClose, children, width = 520 }: { title: string
     return (
         <div className="fixed inset-0 z-40 flex items-center justify-center p-4" style={{ background: 'rgba(14,15,19,0.55)' }} onMouseDown={onClose}>
             <div
-                className="lh-fade-in lh-scroll bg-white rounded-xl shadow-2xl overflow-y-auto w-full"
+                className="lh-fade-in lh-scroll lh-card rounded-xl shadow-2xl overflow-y-auto w-full"
                 style={{ maxWidth: width, maxHeight: '88vh' }}
                 onMouseDown={(e) => e.stopPropagation()}
             >
