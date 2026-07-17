@@ -5,11 +5,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useFormState } from 'react-dom'
 import { loginUser } from '@/app/auth/actions'
+import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+
 export default function LoginForm() {
     const initialState = {
         message: ''
     }
     const [formState, formAction] = useFormState(loginUser, initialState)
+    const [showPassword, setShowPassword] = useState(false)
+    const [capsLockOn, setCapsLockOn] = useState(false)
+
     return (<>
         <form action={formAction}>
             <div className="grid gap-2">
@@ -24,12 +30,26 @@ export default function LoginForm() {
             </div>
             <div className="grid gap-2 mt-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                    id="password"
-                    type="password"
-                    name="password"
-                    required
-                />
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        className="pr-10"
+                        onKeyUp={(e) => setCapsLockOn(e.getModifierState('CapsLock'))}
+                        onKeyDown={(e) => setCapsLockOn(e.getModifierState('CapsLock'))}
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 px-3 text-muted-foreground"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                </div>
+                {capsLockOn && <p className="text-xs text-amber-600">Caps Lock is on.</p>}
             </div>
             <Button className="w-full mt-4" type="submit">Sign In</Button>
             {formState?.message && (

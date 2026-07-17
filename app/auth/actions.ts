@@ -2,8 +2,20 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 const PUBLIC_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || 'http://localhost:3000'
+
+function resolvePublicUrl() {
+    const host = headers().get('x-forwarded-host') ?? headers().get('host')
+    const proto = headers().get('x-forwarded-proto') ?? (host?.includes('localhost') ? 'http' : 'https')
+
+    if (host) {
+        return `${proto}://${host}`
+    }
+
+    return PUBLIC_URL
+}
 
 export async function resetPassword(currentState: { message: string }, formData: FormData) {
     const supabase = createClient()
@@ -30,8 +42,9 @@ export async function resetPassword(currentState: { message: string }, formData:
 export async function forgotPassword(currentState: { message: string }, formData: FormData) {
     const supabase = createClient()
     const email = formData.get('email') as string
+    const publicUrl = resolvePublicUrl()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${PUBLIC_URL}/forgot-password/reset`,
+        redirectTo: `${publicUrl}/forgot-password/reset`,
     })
 
     if (error) {
@@ -42,6 +55,7 @@ export async function forgotPassword(currentState: { message: string }, formData
 
 export async function signup(currentState: { message: string }, formData: FormData) {
     const supabase = createClient()
+    const publicUrl = resolvePublicUrl()
 
     const data = {
         email: formData.get('email') as string,
@@ -53,7 +67,7 @@ export async function signup(currentState: { message: string }, formData: FormDa
         email: data.email,
         password: data.password,
         options: {
-            emailRedirectTo: `${PUBLIC_URL}/auth/callback`,
+            emailRedirectTo: `${publicUrl}/auth/callback`,
             data: {
                 full_name: data.name,
             },
@@ -108,10 +122,11 @@ export async function logout() {
 
 export async function signInWithGoogle() {
     const supabase = createClient()
+    const publicUrl = resolvePublicUrl()
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: `${PUBLIC_URL}/auth/callback`,
+            redirectTo: `${publicUrl}/auth/callback`,
         },
     })
 
