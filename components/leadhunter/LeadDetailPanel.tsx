@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
-import { X, Mail, Phone, MapPin, Building2, Crosshair, Pencil, Clock, Plus, TrendingUp, Zap, CalendarClock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { X, Mail, Phone, MapPin, Building2, Crosshair, Pencil, Clock, Plus, TrendingUp, Zap, CalendarClock, Sparkles, Send, MessageSquareText, Copy } from 'lucide-react'
 import { getScores, timeAgo } from '@/lib/scoring'
 import { STATUSES, STATUS_COLOR, type LeadStatus } from '@/lib/constants'
-import { Badge, ScoreGauge, ScoreBar, IconButton, Spinner } from './primitives'
+import { Badge, ScoreGauge, ScoreBar, IconButton, Spinner, Modal } from './primitives'
 import { useToast } from './toast'
 import { getLeadDetail, updateLeadTags, addLeadNote } from '@/app/app/leads/actions'
 import type { Lead, Note, TimelineEntry } from '@/lib/types'
+
+type DraftResult = { subject?: string; body: string }
 
 const TIMELINE_ICON: Record<string, any> = {
     created: Plus, status: TrendingUp, automation: Zap, followup: CalendarClock,
@@ -24,6 +27,7 @@ export function LeadDetailPanel({
     onStatusChange: (leadId: string, status: LeadStatus) => void
 }) {
     const { pushToast } = useToast()
+    const router = useRouter()
     const [pending, startTransition] = useTransition()
     const [loading, setLoading] = useState(true)
     const [notes, setNotes] = useState<Note[]>([])
@@ -31,8 +35,65 @@ export function LeadDetailPanel({
     const [tagInput, setTagInput] = useState('')
     const [noteText, setNoteText] = useState('')
     const [tags, setTags] = useState(lead.tags)
+    const [aiPending, setAiPending] = useState<'enrich' | 'intent' | 'draft-email' | 'draft-sms' | null>(null)
+    const [draftResult, setDraftResult] = useState<DraftResult | null>(null)
 
     const scores = getScores(lead)
+
+    async function callAiRoute<T>(path: string, payload: Record<string, unknown>): Promise<T | null> {
+        try {
+            const res = await fetch(path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+            const json = await res.json()
+            if (!res.ok) {
+                pushToast(json.error || 'AI request failed.')
+                return null
+            }
+            return json.data as T
+        } catch {
+            pushToast('AI request failed.')
+            return null
+        }
+    }
+
+    async function runEnrich() {
+        setAiPending('enrich')
+        const data = await callAiRoute<{ summary: string }>('/api/ai/enrich', { leadId: lead.id })
+        setAiPending(null)
+        if (data) {
+            pushToast('Enrichment generated.')
+            reload()
+            router.refresh()
+        }
+    }
+
+    async function runIntent() {
+        setAiPending('intent')
+        const data = await callAiRoute<{ score: number }>('/api/ai/intent', { leadId: lead.id })
+        setAiPending(null)
+        if (data) {
+            pushToast(`Intent score: ${data.score}.`)
+            reload()
+            router.refresh()
+        }
+    }
+
+    async function runDraft(channel: 'email' | 'sms') {
+        setAiPending(channel === 'email' ? 'draft-email' : 'draft-sms')
+        const data = await callAiRoute<DraftResult>('/api/ai/draft', { leadId: lead.id, channel })
+        setAiPending(null)
+        if (data) setDraftResult(data)
+    }
+
+    async function copyDraft() {
+        if (!draftResult) return
+        const text = draftResult.subject ? `Subject: ${draftResult.subject}\n\n${draftResult.body}` : draftResult.body
+        await navigator.clipboard.writeText(text)
+        pushToast('Copied to clipboard.')
+    }
 
     async function reload() {
         setLoading(true)
@@ -136,6 +197,30 @@ export function LeadDetailPanel({
                                 <p className="text-xs mt-1" style={{ color: 'var(--lh-muted)' }}>{lead.aiIntent.sentiment} sentiment · {lead.aiIntent.urgency} urgency</p>
                             </div>
                         )}
+                        {lead.aiEnrichment && (
+                            <div className="mt-2 text-sm rounded-lg p-3" style={{ background: 'var(--lh-canvas)' }}>
+                                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--lh-muted)' }}>AI research</p>
+                                <p>{lead.aiEnrichment.summary}</p>
+                            </div>
+                        )}
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                            <IconButton
+                                icon={Sparkles} label={aiPending === 'enrich' ? 'Enriching...' : 'Enrich'}
+                                variant="outline" onClick={runEnrich} disabled={aiPending !== null}
+                            />
+                            <IconButton
+                                icon={Crosshair} label={aiPending === 'intent' ? 'Analyzing...' : 'Analyze intent'}
+                                variant="outline" onClick={runIntent} disabled={aiPending !== null}
+                            />
+                            <IconButton
+                                icon={Send} label={aiPending === 'draft-email' ? 'Drafting...' : 'Draft email'}
+                                variant="outline" onClick={() => runDraft('email')} disabled={aiPending !== null}
+                            />
+                            <IconButton
+                                icon={MessageSquareText} label={aiPending === 'draft-sms' ? 'Drafting...' : 'Draft SMS'}
+                                variant="outline" onClick={() => runDraft('sms')} disabled={aiPending !== null}
+                            />
+                        </div>
                     </div>
 
                     <div className="border-t pt-4" style={{ borderColor: 'var(--lh-border)' }}>
@@ -178,6 +263,26 @@ export function LeadDetailPanel({
                     </div>
                 </div>
             </div>
+
+            {draftResult && (
+                <Modal title="AI draft" onClose={() => setDraftResult(null)} width={480}>
+                    <div className="flex flex-col gap-3">
+                        {draftResult.subject && (
+                            <div>
+                                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--lh-muted)' }}>Subject</p>
+                                <p className="text-sm">{draftResult.subject}</p>
+                            </div>
+                        )}
+                        <div>
+                            <p className="text-xs font-semibold mb-1" style={{ color: 'var(--lh-muted)' }}>Body</p>
+                            <p className="text-sm whitespace-pre-wrap">{draftResult.body}</p>
+                        </div>
+                        <div className="flex justify-end">
+                            <IconButton icon={Copy} label="Copy" variant="accent" onClick={copyDraft} />
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }
