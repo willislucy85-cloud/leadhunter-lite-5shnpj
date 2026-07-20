@@ -1,0 +1,6 @@
+{
+    "crons": [
+        { "path": "/api/cron/run-sequences", "schedule": "0 13 * * *" },
+        { "path": "/api/cron/check-followups", "schedule": "30 13 * * *" }
+    ]
+}

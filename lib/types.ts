@@ -80,3 +80,80 @@ export type Note = {
     text: string
     created_at: string
 }
+
+export type SequenceStepType = 'email' | 'sms' | 'status_change' | 'follow_up'
+
+export type SequenceStep = {
+    id: string
+    sequence_id: string
+    step_index: number
+    type: SequenceStepType
+    delay_days: number
+    subject: string | null
+    body: string | null
+    new_status: LeadStatus | null
+    follow_up_note: string | null
+    created_at: string
+}
+
+export type Sequence = {
+    id: string
+    workspace_id: string
+    name: string
+    description: string
+    category: string
+    createdAt: string
+    steps: SequenceStep[]
+    activeEnrollments: number
+}
+
+export type SequenceEnrollment = {
+    id: string
+    sequence_id: string
+    lead_id: string
+    step_index: number
+    status: 'active' | 'completed' | 'paused'
+    enrolled_at: string
+}
+
+export type AutomationTrigger = 'follow_up_overdue' | 'high_intent_new' | 'stalled_lead'
+
+export type AutomationAction =
+    | { type: 'change_status'; status: LeadStatus }
+    | { type: 'add_timeline_note'; text: string }
+    | { type: 'set_follow_up'; inDays: number }
+
+export type Automation = {
+    id: string
+    workspace_id: string
+    name: string
+    trigger: AutomationTrigger
+    conditions: { staleDays?: number }
+    actions: AutomationAction[]
+    active: boolean
+    createdAt: string
+}
+
+export type AutomationRow = {
+    id: string
+    workspace_id: string
+    name: string
+    trigger: string
+    conditions: { staleDays?: number } | null
+    actions: AutomationAction[] | null
+    active: boolean
+    created_at: string
+}
+
+export function rowToAutomation(row: AutomationRow): Automation {
+    return {
+        id: row.id,
+        workspace_id: row.workspace_id,
+        name: row.name,
+        trigger: row.trigger as AutomationTrigger,
+        conditions: row.conditions || {},
+        actions: row.actions || [],
+        active: row.active,
+        createdAt: row.created_at,
+    }
+}
