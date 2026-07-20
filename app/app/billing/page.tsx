@@ -130,6 +130,12 @@ export default async function BillingPage() {
                             </>
                         )}
 
+                        {workspace.subscription_tier === 'Free' && (
+                            <p className="mt-2 w-full text-xs" style={{ color: 'var(--lh-muted)' }}>
+                                Lock in today&apos;s price — rates may increase for new signups.
+                            </p>
+                        )}
+
                         {workspace.subscription_tier !== 'Free' && workspace.stripe_customer_id && (
                             <form action="/api/stripe/portal" method="post">
                                 <button
