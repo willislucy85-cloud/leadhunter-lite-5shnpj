@@ -157,3 +157,20 @@ export function rowToAutomation(row: AutomationRow): Automation {
         createdAt: row.created_at,
     }
 }
+
+export type WorkspaceRole = 'Owner' | 'Admin' | 'Member'
+
+export type WorkspaceMember = {
+    id: string
+    userId: string
+    email: string
+    role: WorkspaceRole
+    createdAt: string
+}
+
+export type WorkspaceInvite = {
+    id: string
+    email: string
+    role: WorkspaceRole
+    createdAt: string
+}

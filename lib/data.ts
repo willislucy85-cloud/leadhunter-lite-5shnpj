@@ -10,6 +10,9 @@ import {
     type SequenceStep,
     type Automation,
     type AutomationRow,
+    type WorkspaceMember,
+    type WorkspaceInvite,
+    type WorkspaceRole,
 } from './types'
 
 export async function fetchLeads(supabase: SupabaseClient, workspaceId: string): Promise<Lead[]> {
@@ -124,4 +127,54 @@ export async function fetchAutomations(supabase: SupabaseClient, workspaceId: st
 
     if (error || !data) return []
     return (data as AutomationRow[]).map(rowToAutomation)
+}
+
+// Member emails live in auth.users, which RLS-scoped clients can't read —
+// the caller must pass a service-role client alongside the regular one.
+export async function fetchWorkspaceMembers(
+    supabase: SupabaseClient,
+    adminClient: SupabaseClient,
+    workspaceId: string
+): Promise<WorkspaceMember[]> {
+    const { data, error } = await supabase
+        .from('workspace_members')
+        .select('id, user_id, role, created_at')
+        .eq('workspace_id', workspaceId)
+        .order('created_at', { ascending: true })
+
+    if (error || !data) return []
+
+    const rows = data as { id: string; user_id: string; role: WorkspaceRole; created_at: string }[]
+
+    const members = await Promise.all(
+        rows.map(async (row) => {
+            const { data: userRes } = await adminClient.auth.admin.getUserById(row.user_id)
+            return {
+                id: row.id,
+                userId: row.user_id,
+                email: userRes?.user?.email || 'Unknown',
+                role: row.role,
+                createdAt: row.created_at,
+            }
+        })
+    )
+
+    return members
+}
+
+export async function fetchPendingInvites(supabase: SupabaseClient, workspaceId: string): Promise<WorkspaceInvite[]> {
+    const { data, error } = await supabase
+        .from('workspace_invites')
+        .select('id, email, role, created_at')
+        .eq('workspace_id', workspaceId)
+        .is('accepted_at', null)
+        .order('created_at', { ascending: false })
+
+    if (error || !data) return []
+    return (data as { id: string; email: string; role: WorkspaceRole; created_at: string }[]).map((row) => ({
+        id: row.id,
+        email: row.email,
+        role: row.role,
+        createdAt: row.created_at,
+    }))
 }
