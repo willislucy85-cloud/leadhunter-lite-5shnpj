@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Mail, Phone, MapPin, Building2, Crosshair, Pencil, Clock, Plus, TrendingUp, Zap, CalendarClock, Sparkles, Send, MessageSquareText, Copy } from 'lucide-react'
+import { X, Mail, Phone, MapPin, Building2, Crosshair, Pencil, Clock, Plus, TrendingUp, Zap, CalendarClock, Sparkles, Send, MessageSquareText, Copy, Globe } from 'lucide-react'
 import { getScores, timeAgo } from '@/lib/scoring'
 import { STATUSES, STATUS_COLOR, type LeadStatus } from '@/lib/constants'
 import { Badge, ScoreGauge, ScoreBar, IconButton, Spinner, Modal } from './primitives'
@@ -161,6 +161,7 @@ export function LeadDetailPanel({
                         <div className="text-sm flex flex-col gap-1.5 mt-1" style={{ color: 'var(--lh-muted)' }}>
                             {lead.email && <span className="flex items-center gap-2"><Mail size={13} />{lead.email}</span>}
                             {lead.phone && <span className="flex items-center gap-2"><Phone size={13} />{lead.phone}</span>}
+                            {lead.website && <span className="flex items-center gap-2"><Globe size={13} /><a href={lead.website} target="_blank" rel="noreferrer" className="underline">{lead.website}</a></span>}
                             {(lead.city || lead.state) && <span className="flex items-center gap-2"><MapPin size={13} />{lead.city}{lead.city && lead.state ? ', ' : ''}{lead.state}</span>}
                             <span className="flex items-center gap-2"><Building2 size={13} />{lead.category} · via {lead.source}</span>
                         </div>

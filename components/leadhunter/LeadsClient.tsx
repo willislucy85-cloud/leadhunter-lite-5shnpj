@@ -2,13 +2,14 @@
 
 import { useMemo, useRef, useState, useTransition } from 'react'
 import Papa from 'papaparse'
-import { Search, Upload, Download, Plus, ChevronRight, Flame, AlertCircle } from 'lucide-react'
+import { Search, Upload, Download, Plus, ChevronRight, Flame, AlertCircle, Compass } from 'lucide-react'
 import { getScores, timeAgo } from '@/lib/scoring'
 import { STATUSES, STATUS_COLOR, CATEGORIES, TIERS, type Tier, type LeadStatus } from '@/lib/constants'
 import { Badge, IconButton, Modal, EmptyState } from './primitives'
 import { useToast } from './toast'
 import { createLead, bulkImportLeads, changeLeadStatus } from '@/app/app/leads/actions'
 import { LeadDetailPanel } from './LeadDetailPanel'
+import { FindLeadsModal } from './FindLeadsModal'
 import type { Lead } from '@/lib/types'
 
 const QUICK_VIEWS = [
@@ -86,6 +87,7 @@ export function LeadsClient({ leads, tier, initialSelectedLeadId }: { leads: Lea
     const [search, setSearch] = useState('')
     const [quickView, setQuickView] = useState('all')
     const [showAdd, setShowAdd] = useState(false)
+    const [showFind, setShowFind] = useState(false)
     const [selectedLeadId, setSelectedLeadId] = useState<string | null>(initialSelectedLeadId)
     const [, startTransition] = useTransition()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -191,6 +193,7 @@ export function LeadsClient({ leads, tier, initialSelectedLeadId }: { leads: Lea
                     <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleImport(e.target.files[0]); e.target.value = '' }} />
                     <IconButton icon={Upload} label="Import" variant="outline" onClick={() => fileInputRef.current?.click()} />
                     <IconButton icon={Download} label="Export" variant="outline" onClick={handleExport} />
+                    <IconButton icon={Compass} label="Find leads" variant="outline" onClick={() => setShowFind(true)} />
                     <IconButton icon={Plus} label="Add lead" variant="accent" onClick={() => setShowAdd(true)} />
                 </div>
             </div>
@@ -269,6 +272,7 @@ export function LeadsClient({ leads, tier, initialSelectedLeadId }: { leads: Lea
             </div>
 
             {showAdd && <AddLeadModal onClose={() => setShowAdd(false)} onCreated={() => {}} />}
+            {showFind && <FindLeadsModal onClose={() => setShowFind(false)} />}
 
             {selectedLead && (
                 <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedLeadId(null)} onStatusChange={handleStatusChange} />

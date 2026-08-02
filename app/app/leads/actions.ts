@@ -139,6 +139,91 @@ export async function bulkImportLeads(rows: LeadFormInput[]) {
     return { imported: inserted?.length || 0, truncated }
 }
 
+export type PlaceLeadInput = {
+    placeId: string
+    name: string
+    phone?: string
+    website?: string
+    address?: string
+    category: string
+    city?: string
+    state?: string
+}
+
+export async function importFoundLeads(places: PlaceLeadInput[]) {
+    const { supabase, workspaceId, workspace } = await requireWorkspace()
+
+    const valid = places.filter((p) => p.name?.trim() && p.placeId?.trim())
+    if (valid.length === 0) {
+        return { error: 'No businesses selected to import.', imported: 0 }
+    }
+
+    const placeIds = valid.map((p) => p.placeId)
+    const { data: existingRows } = await supabase
+        .from('leads')
+        .select('place_id')
+        .eq('workspace_id', workspaceId)
+        .in('place_id', placeIds)
+    const existingPlaceIds = new Set((existingRows || []).map((r: { place_id: string }) => r.place_id))
+    const deduped = valid.filter((p) => !existingPlaceIds.has(p.placeId))
+    const duplicates = valid.length - deduped.length
+
+    if (deduped.length === 0) {
+        return { error: 'All selected businesses are already in your leads.', imported: 0, duplicates }
+    }
+
+    let room = Infinity
+    if (workspace.subscription_tier === 'Free') {
+        const existing = await countLeads(supabase, workspaceId)
+        room = Math.max(0, TIERS.Free.leadsLimit - existing)
+    }
+    const truncated = deduped.length > room
+    const toInsert = deduped.slice(0, room).map((p) => ({
+        workspace_id: workspaceId,
+        name: p.name.trim(),
+        company: p.name.trim(),
+        email: null,
+        phone: p.phone || null,
+        website: p.website || null,
+        address: p.address || null,
+        place_id: p.placeId,
+        category: p.category || 'Other',
+        city: p.city || null,
+        state: p.state || null,
+        source: 'Google Places',
+        tags: [],
+        assigned_to: 'Unassigned',
+        metrics: DEFAULT_METRICS,
+    }))
+
+    if (toInsert.length === 0) {
+        return { error: "You've hit the Free plan's lead limit. Upgrade in Billing to import more.", imported: 0 }
+    }
+
+    const { data: inserted, error } = await supabase.from('leads').insert(toInsert).select('id')
+    if (error) {
+        if (error.code === '23505') {
+            return { error: 'Some of these businesses were already imported. Try again.', imported: 0 }
+        }
+        return { error: error.message, imported: 0 }
+    }
+
+    if (inserted?.length) {
+        await supabase.from('timeline_entries').insert(
+            inserted.map((l: { id: string }) => ({
+                workspace_id: workspaceId,
+                lead_id: l.id,
+                type: 'created',
+                text: 'Lead imported from Google Places',
+            }))
+        )
+    }
+
+    revalidatePath('/app')
+    revalidatePath('/app/leads')
+    return { imported: inserted?.length || 0, truncated, duplicates }
+}
+
 export async function changeLeadStatus(leadId: string, newStatus: LeadStatus) {
     const { supabase, workspaceId } = await requireWorkspace()
 

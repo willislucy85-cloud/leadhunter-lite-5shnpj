@@ -8,6 +8,8 @@ export type Lead = {
     company: string
     email: string
     phone: string
+    website: string
+    address: string
     category: string
     city: string
     state: string
@@ -29,6 +31,9 @@ export type LeadRow = {
     company: string | null
     email: string | null
     phone: string | null
+    website: string | null
+    address: string | null
+    place_id: string | null
     category: string | null
     city: string | null
     state: string | null
@@ -51,6 +56,8 @@ export function rowToLead(row: LeadRow): Lead {
         company: row.company || '',
         email: row.email || '',
         phone: row.phone || '',
+        website: row.website || '',
+        address: row.address || '',
         category: row.category || 'Other',
         city: row.city || '',
         state: row.state || '',
