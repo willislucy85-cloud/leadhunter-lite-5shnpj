@@ -10,7 +10,7 @@ export const STATUS_COLOR: Record<LeadStatus, string> = {
     Lost: '#C4453A',
 }
 
-export const CATEGORIES = ['Roofing', 'HVAC', 'Solar', 'Plumbing', 'General Contractor', 'Marketing Agency', 'Other'] as const
+export const CATEGORIES = ['Roofing', 'HVAC', 'Solar', 'Plumbing', 'General Contractor', 'Marketing Agency', 'Web Design & Development', 'Other'] as const
 
 export const SEQUENCE_STEP_TYPES = ['email', 'sms', 'status_change', 'follow_up'] as const
 
