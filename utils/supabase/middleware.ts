@@ -46,13 +46,17 @@ export async function updateSession(request: NextRequest) {
     if (!user && pathname.startsWith('/app')) {
         url.pathname = '/login'
         url.searchParams.set('next', pathname)
-        return NextResponse.redirect(url)
+        const redirectResponse = NextResponse.redirect(url)
+        supabaseResponse.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie))
+        return redirectResponse
     }
 
     if (user && (pathname === '/login' || pathname === '/signup')) {
         url.pathname = '/app'
         url.search = ''
-        return NextResponse.redirect(url)
+        const redirectResponse = NextResponse.redirect(url)
+        supabaseResponse.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie))
+        return redirectResponse
     }
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
