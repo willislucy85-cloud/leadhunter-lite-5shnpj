@@ -33,7 +33,17 @@ export async function getWorkspaceContext(): Promise<WorkspaceContext | null> {
         .limit(1)
         .maybeSingle()
 
-    if (error || !membership || !membership.workspaces) {
+    if (error) {
+        // A logged-in user with a fetch/query failure here is not the same as
+        // an unauthenticated user: redirecting to /login would just bounce
+        // right back to /app (middleware sees a valid session), producing an
+        // infinite redirect loop. Let this surface to the nearest error
+        // boundary instead.
+        console.error('getWorkspaceContext: failed to load workspace membership', error)
+        throw new Error('Failed to load workspace')
+    }
+
+    if (!membership || !membership.workspaces) {
         return null
     }
 
