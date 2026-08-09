@@ -2,6 +2,7 @@ import { requireWorkspace } from '@/lib/workspace'
 import { Sidebar } from '@/components/leadhunter/Sidebar'
 import { BrandStyles } from '@/components/leadhunter/brand-styles'
 import { ToastProvider } from '@/components/leadhunter/toast'
+import { WelcomeGuide } from '@/components/leadhunter/WelcomeGuide'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
     const { supabase, workspaceId } = await requireWorkspace()
@@ -23,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 }}
             />
             <BrandStyles />
+            <WelcomeGuide workspaceId={workspaceId} />
             <ToastProvider>
                 <Sidebar
                     counts={{
