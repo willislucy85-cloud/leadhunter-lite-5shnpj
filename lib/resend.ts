@@ -40,11 +40,13 @@ export async function sendEmailSafe(to: string, subject: string, body: string): 
         })
 
         if (error || !data) {
+            console.error('sendEmailSafe: Resend rejected the send', { to, error })
             return { ok: false, skipped: false, error: error?.message || 'Failed to send email' }
         }
 
         return { ok: true, id: data.id }
     } catch (error) {
+        console.error('sendEmailSafe: Resend send threw', { to, error })
         return {
             ok: false,
             skipped: false,
